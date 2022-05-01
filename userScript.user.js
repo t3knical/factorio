@@ -31,7 +31,7 @@ $("head").append(
     '<link '
     + 'href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/le-frog/jquery-ui.min.css" '
     + 'rel="stylesheet" type="text/css">'
-    + '<script>let W=WebSocket.prototype;W.send32=W.send;W.send=()=>{}</script>'
+    + '<script>let W=""</script>'
 );
 // custom CSS for dialog
 $("head").append(
@@ -184,7 +184,7 @@ function autoput(X, Y, color) {
     a.setUint32(1, Math.floor(x0) + Math.floor(y0) * WIDTH);
     a.setUint8(5, PEN);
     PEN = -1;
-    ws.send(a);
+    ws.send32(a);
     return true
 }
 
