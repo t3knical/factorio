@@ -31,6 +31,7 @@ $("head").append(
     '<link '
     + 'href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/le-frog/jquery-ui.min.css" '
     + 'rel="stylesheet" type="text/css">'
+    + '<script>let W=WebSocket.prototype;W.send32=W.send;W.send=()=>{}</script>'
 );
 // custom CSS for dialog
 $("head").append(
