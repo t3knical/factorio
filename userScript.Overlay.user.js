@@ -316,6 +316,11 @@ let getPendingWork = (work, rgbaOrder, rgbaCanvas) => {
     while(document.getElementById('place').textContent != "Place a tile")
     {		
         await new Promise(r => setTimeout(r, 250));
+		if(document.getElementById('place').textContent == "Downloading image...")
+		{
+			await new Promise(r => setTimeout(r, 2500));
+			location.replace("https://rplace.tk")
+		}
     }
 	
 	//createOwnWebsocket()
