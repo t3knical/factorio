@@ -16,6 +16,54 @@
 // @downloadURL  https://github.com/t3knical/rplace/raw/main/Templates/Canada/Canada.Script.user.js
 // ==/UserScript==
 
+let ws = new WebSocket('wss://server.rplace.tk:443' + (localStorage.vip ? "/" + localStorage.vip : ""))
+ws.onmessage = async function({data}){
+    data = new DataView(await data.arrayBuffer())
+    let code = data.getUint8(0)
+    if(code == 1){
+        CD = data.getUint32(1) * 1000
+    }else if(code == 2){
+        //run length coding
+        if(!load)load = data
+        else runLengthChanges(data)
+    }else if(code == 7){
+        CD = data.getUint32(1) * 1000
+        seti(data.getUint32(5), data.getUint8(9))
+    }else if(code == 6){
+        let i = 0
+        while(i < data.byteLength - 2){
+            seti(data.getUint32(i += 1), data.getUint8(i += 4))
+        }
+    }else if(code == 3){
+        online = data.getUint16(1)
+        document.getElementById("onlineCounter").textContent = online;
+    }else if(code == 15){
+        let txt = censor(decoder.decode(new Uint8Array(data.buffer).slice(1))).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+        let name; [txt, name] = txt.split("\n")
+        if(name)name = name.replace(/\W+/g,'').toLowerCase()
+        if(!txt)return
+        if(txt.includes("𝚍𝚒𝚜𝚌𝚘𝚛𝚍.𝚐𝚐"))return
+        if(txt.includes("𝐝𝐢𝐬𝐜𝐨𝐫𝐝.𝐠𝐠"))return
+        if(txt.includes("discord.gg"))return
+        if(name == "nors")return
+        if(name == "anlcan")return
+        let newMessage = document.createElement("div")
+        newMessage.innerHTML = `<span style="color: ${CHAT_COLOURS[name ? hash(name) & 7 : (Math.round(Math.random() * 8))]};">[${name || "anon"}]</span> ${txt}\n`
+        let scroll = chatMessages.scrollTop+chatMessages.offsetHeight+10>=chatMessages.scrollHeight
+        chatMessages.insertAdjacentElement("beforeEnd", newMessage)
+        if(chatMessages.children.length>100){
+            chatMessages.children[0].remove()
+        }
+        scroll && chatMessages.scrollTo(0,999999999)
+    }
+}
+ws.onclose = () => {
+    if(CD != Infinity)return location.reload()
+    //Something went wrong...
+    CD = 1e100
+}
+
+
 // dialog DIV
 $("body").append('<div id="mydialog" style="display: none">'
     + '<font style="font-size: 14px"><u>Current Template:</u></font> <font id="currentTemplate" style="font-size: 12px"></font>'
@@ -171,6 +219,10 @@ function rgbToHex(r, g, b) {
     )
 };
 
+window.addEventListener('load', function() {
+    console.log(ws)
+}, false);
+
 function autoput(X, Y, color) {
     //if (CD > Date.now()) return
     CD = Date.now() + COOLDOWN;
@@ -184,7 +236,7 @@ function autoput(X, Y, color) {
     a.setUint32(1, Math.floor(x0) + Math.floor(y0) * WIDTH);
     a.setUint8(5, PEN);
     PEN = -1;
-    ws.send32(a);
+    ws.send(a);
     return true
 }
 
