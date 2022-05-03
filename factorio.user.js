@@ -453,7 +453,7 @@ async function attemptPlace() {
         if (work0.length === 0 && work1.length === 0 && work2.length === 0) {
             document.getElementById('currentTemplate').textContent = `None - All Work Is Complete!`;
             document.getElementById('lastPlacedPixel').textContent = `${0}, ${0}`;
-            document.getElementById('pixelesLeft').textContent = `All ${order3.length} Pixels Are Fixed!`;
+            document.getElementById('pixelesLeft').textContent = `All ${order1.length} Pixels Are Fixed!`;
             CD = Date.now() + 5000;
 
             setTimeout(attemptPlace, 500) // Try again in 500 ms.
